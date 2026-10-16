@@ -1,0 +1,10 @@
+*.md
+
+# Environment variables - contains API keys
+.env
+extension/.env
+**/.env.local
+
+# API Keys and secrets
+**/config.local.js
+docs/*.md

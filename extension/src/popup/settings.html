@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETHmem Settings</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #111714;
+      color: white;
+      width: 400px;
+      min-height: 500px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      border-bottom: 1px solid #29382f;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .back-btn:hover {
+      opacity: 0.8;
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .content {
+      padding: 24px;
+      flex: 1;
+    }
+
+    .section {
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #b8c5be;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #b8c5be;
+    }
+
+    input {
+      width: 100%;
+      background-color: #1a2420;
+      border: 1px solid #29382f;
+      border-radius: 8px;
+      padding: 12px;
+      color: white;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #38e078;
+    }
+
+    .btn {
+      background-color: #38e078;
+      color: #111714;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      width: 100%;
+    }
+
+    .btn:hover {
+      background-color: #2ec566;
+    }
+
+    .btn:disabled {
+      background-color: #29382f;
+      color: #667873;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background-color: #29382f;
+      color: white;
+      margin-top: 8px;
+    }
+
+    .btn-secondary:hover {
+      background-color: #354a3f;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .status-success {
+      background-color: rgba(56, 224, 120, 0.2);
+      color: #38e078;
+    }
+
+    .status-error {
+      background-color: rgba(255, 82, 82, 0.2);
+      color: #ff5252;
+    }
+
+    .status-warning {
+      background-color: rgba(255, 179, 0, 0.2);
+      color: #ffb300;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .message-success {
+      background-color: rgba(56, 224, 120, 0.1);
+      border: 1px solid rgba(56, 224, 120, 0.3);
+      color: #38e078;
+    }
+
+    .message-error {
+      background-color: rgba(255, 82, 82, 0.1);
+      border: 1px solid rgba(255, 82, 82, 0.3);
+      color: #ff5252;
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: #667873;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    .help-text a {
+      color: #38e078;
+      text-decoration: none;
+    }
+
+    .help-text a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <button class="back-btn" id="backBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+          <path
+            d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z" />
+        </svg>
+        Back
+      </button>
+      <h1>Settings</h1>
+      <div style="width: 60px;"></div>
+    </header>
+
+    <div class="content">
+      <div class="section">
+        <div class="section-title">Gemini Configuration</div>
+
+        <div class="input-group">
+          <label for="apiKey">API Key</label>
+          <input type="password" id="apiKey" placeholder="AIz...">
+          <div class="help-text">
+            Get your API key from <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Status</label>
+          <div id="apiStatus">
+            <span class="status-badge status-warning">Not Configured</span>
+          </div>
+        </div>
+
+        <button id="testBtn" class="btn" disabled>Test Connection</button>
+        <button id="saveBtn" class="btn" style="margin-top: 8px;">Save API Key</button>
+
+        <div id="message" style="display: none;"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">How It Works</div>
+        <div class="help-text">
+          ETHmem uses Gemini 2.5 Flash to extract meaningful information from your conversations.
+          Your API key is stored securely in Chrome's encrypted storage and never leaves your device
+          except to make requests to Google's Gemini API.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="settings.js"></script>
+</body>
+
+</html>

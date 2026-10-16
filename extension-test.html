@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EthMem Extension Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #111;
+            color: #fff;
+        }
+        .test-section {
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        button {
+            background: #38e078;
+            color: #111;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2ec566;
+        }
+        .log {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .success { color: #38e078; }
+        .error { color: #ff4444; }
+        .warning { color: #ffaa00; }
+    </style>
+</head>
+<body>
+    <h1>🧠 EthMem Extension Test Page</h1>
+    
+    <div class="test-section">
+        <h2>1. Extension Detection</h2>
+        <p>This will test if the EthMem extension is properly loaded and communicating.</p>
+        <button onclick="testExtensionAvailability()">Test Extension Availability</button>
+        <div id="availability-log" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Extension Communication</h2>
+        <p>Test direct communication with the extension.</p>
+        <button onclick="testGetStats()">Get Memory Stats</button>
+        <button onclick="testGetMemories()">Get Memories</button>
+        <div id="communication-log" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Console Messages</h2>
+        <p>Check the browser console (F12) for these messages:</p>
+        <ul>
+            <li><code>[EthMem] Frontend bridge loaded</code></li>
+            <li><code>[EthMem] Frontend bridge initialized</code></li>
+        </ul>
+        <button onclick="checkConsoleMessages()">Check Console</button>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Manual Test</h2>
+        <p>Send a raw message to the extension:</p>
+        <button onclick="sendRawMessage()">Send Raw Message</button>
+        <div id="manual-log" class="log"></div>
+    </div>
+
+    <script>
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+            element.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            element.scrollTop = element.scrollHeight;
+        }
+
+        function clearLog(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+
+        // Test 1: Extension Availability
+        async function testExtensionAvailability() {
+            clearLog('availability-log');
+            log('availability-log', 'Testing extension availability...', 'info');
+
+            // Check if window.chrome exists
+            if (typeof chrome !== 'undefined') {
+                log('availability-log', '✓ Chrome API available', 'success');
+            } else {
+                log('availability-log', '✗ Chrome API not available', 'error');
+            }
+
+            // Test window message communication
+            let extensionResponded = false;
+            
+            const messageHandler = (event) => {
+                if (event.data?.type === 'ETHMEM_EXTENSION_READY') {
+                    extensionResponded = true;
+                    log('availability-log', '✓ Extension ready message received', 'success');
+                    window.removeEventListener('message', messageHandler);
+                }
+            };
+
+            window.addEventListener('message', messageHandler);
+
+            // Send test message
+            window.postMessage({
+                type: 'ETHMEM_REQUEST',
+                action: 'GET_STATS',
+                requestId: Date.now()
+            }, window.location.origin);
+
+            // Wait for response
+            setTimeout(() => {
+                if (!extensionResponded) {
+                    log('availability-log', '✗ Extension did not respond', 'error');
+                    log('availability-log', 'Possible issues:', 'warning');
+                    log('availability-log', '- Extension not installed', 'warning');
+                    log('availability-log', '- Extension not enabled', 'warning');
+                    log('availability-log', '- Extension lacks localhost permissions', 'warning');
+                    log('availability-log', '- Content script not injected', 'warning');
+                }
+                window.removeEventListener('message', messageHandler);
+            }, 2000);
+        }
+
+        // Test 2: Get Stats
+        async function testGetStats() {
+            clearLog('communication-log');
+            log('communication-log', 'Requesting memory stats...', 'info');
+
+            const requestId = Date.now();
+            let responseReceived = false;
+
+            const messageHandler = (event) => {
+                if (event.data?.type === 'ETHMEM_RESPONSE' && event.data?.requestId === requestId) {
+                    responseReceived = true;
+                    log('communication-log', '✓ Response received', 'success');
+                    log('communication-log', `Data: ${JSON.stringify(event.data.data, null, 2)}`, 'info');
+                    window.removeEventListener('message', messageHandler);
+                }
+            };
+
+            window.addEventListener('message', messageHandler);
+
+            window.postMessage({
+                type: 'ETHMEM_REQUEST',
+                action: 'GET_STATS',
+                requestId: requestId
+            }, window.location.origin);
+
+            setTimeout(() => {
+                if (!responseReceived) {
+                    log('communication-log', '✗ No response received', 'error');
+                }
+                window.removeEventListener('message', messageHandler);
+            }, 3000);
+        }
+
+        // Test 3: Get Memories
+        async function testGetMemories() {
+            clearLog('communication-log');
+            log('communication-log', 'Requesting memories...', 'info');
+
+            const requestId = Date.now();
+            let responseReceived = false;
+
+            const messageHandler = (event) => {
+                if (event.data?.type === 'ETHMEM_RESPONSE' && event.data?.requestId === requestId) {
+                    responseReceived = true;
+                    log('communication-log', '✓ Response received', 'success');
+                    const memories = event.data.data?.memories || [];
+                    log('communication-log', `Found ${memories.length} memories`, 'info');
+                    if (memories.length > 0) {
+                        log('communication-log', `First memory: ${JSON.stringify(memories[0], null, 2)}`, 'info');
+                    }
+                    window.removeEventListener('message', messageHandler);
+                }
+            };
+
+            window.addEventListener('message', messageHandler);
+
+            window.postMessage({
+                type: 'ETHMEM_REQUEST',
+                action: 'GET_MEMORIES',
+                requestId: requestId
+            }, window.location.origin);
+
+            setTimeout(() => {
+                if (!responseReceived) {
+                    log('communication-log', '✗ No response received', 'error');
+                }
+                window.removeEventListener('message', messageHandler);
+            }, 3000);
+        }
+
+        // Test 4: Console Messages
+        function checkConsoleMessages() {
+            alert('Please check the browser console (F12) for these messages:\n\n' +
+                  '✓ [EthMem] Frontend bridge loaded\n' +
+                  '✓ [EthMem] Frontend bridge initialized\n\n' +
+                  'If you don\'t see these messages, the content script is not being injected.');
+        }
+
+        // Test 5: Raw Message
+        function sendRawMessage() {
+            clearLog('manual-log');
+            log('manual-log', 'Sending raw message to extension...', 'info');
+
+            // Listen for any EthMem messages
+            const messageHandler = (event) => {
+                if (event.data?.type?.startsWith('ETHMEM_')) {
+                    log('manual-log', `Received: ${event.data.type}`, 'success');
+                    log('manual-log', `Data: ${JSON.stringify(event.data, null, 2)}`, 'info');
+                }
+            };
+
+            window.addEventListener('message', messageHandler);
+
+            // Send message
+            window.postMessage({
+                type: 'ETHMEM_REQUEST',
+                action: 'GET_STATS',
+                requestId: 'manual-test-' + Date.now()
+            }, window.location.origin);
+
+            log('manual-log', 'Message sent. Listening for responses...', 'info');
+
+            // Stop listening after 5 seconds
+            setTimeout(() => {
+                window.removeEventListener('message', messageHandler);
+                log('manual-log', 'Stopped listening for responses.', 'warning');
+            }, 5000);
+        }
+
+        // Auto-run availability test on page load
+        window.addEventListener('load', () => {
+            setTimeout(testExtensionAvailability, 1000);
+        });
+    </script>
+</body>
+</html>

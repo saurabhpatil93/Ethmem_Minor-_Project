@@ -1,0 +1,31 @@
+{
+  "name": "ethmem",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@metamask/eth-sig-util": "^7.0.3",
+    "@reown/appkit": "^1.8.11",
+    "@reown/appkit-adapter-wagmi": "^1.8.11",
+    "@tanstack/react-query": "^5.90.5",
+    "@web3modal/siwe": "^5.1.11",
+    "axios": "^1.6.7",
+    "ethers": "^6.15.0",
+    "ipfs-http-client": "^60.0.1",
+    "lucide-react": "^0.545.0",
+    "next": "15.5.4",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-icons": "^5.5.0"
+  },
+  "devDependencies": {
+    "@pinata/sdk": "^2.1.0",
+    "@tailwindcss/postcss": "^4",
+    "autoprefixer": "^10.4.20",
+    "tailwindcss": "^4"
+  }
+}

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETHmem - Model Management</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background-color: #111714;
+        color: white;
+        width: 600px;
+        min-height: 700px;
+        overflow-y: auto;
+      }
+      
+      .container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 24px;
+        border-bottom: 1px solid #29382f;
+        background: linear-gradient(135deg, #0f2419 0%, #111714 100%);
+      }
+      
+      .logo-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      
+      .logo-icon {
+        width: 28px;
+        height: 28px;
+      }
+      
+      .logo-text {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.015em;
+      }
+      
+      .back-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background-color: #29382f;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 14px;
+        cursor: pointer;
+        color: white;
+        font-size: 13px;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
+      
+      .back-btn:hover {
+        background-color: #354a3f;
+      }
+      
+      .content {
+        padding: 24px;
+        flex: 1;
+      }
+      
+      h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        letter-spacing: -0.015em;
+      }
+      
+      .description {
+        font-size: 14px;
+        color: #b8c5be;
+        margin-bottom: 24px;
+        line-height: 1.5;
+      }
+      
+      .model-card {
+        background: linear-gradient(135deg, #1a2a23 0%, #15201a 100%);
+        border: 1px solid #29382f;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        transition: border-color 0.2s, transform 0.2s;
+      }
+      
+      .model-card:hover {
+        border-color: #38e078;
+        transform: translateY(-2px);
+      }
+      
+      .model-header {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      
+      .model-info {
+        flex: 1;
+      }
+      
+      .model-name {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: #38e078;
+      }
+      
+      .model-task {
+        font-size: 12px;
+        color: #b8c5be;
+        background-color: #29382f;
+        padding: 4px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+      
+      .model-description {
+        font-size: 13px;
+        color: #b8c5be;
+        line-height: 1.4;
+        margin-top: 8px;
+      }
+      
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.015em;
+      }
+      
+      .status-badge.not-downloaded {
+        background-color: #3d3027;
+        color: #ffa94d;
+      }
+      
+      .status-badge.downloading {
+        background-color: #2a3d54;
+        color: #5eb3ff;
+      }
+      
+      .status-badge.downloaded {
+        background-color: #29382f;
+        color: #38e078;
+      }
+      
+      .status-badge.loaded {
+        background-color: #1f3d2e;
+        color: #38e078;
+      }
+      
+      .status-badge.error {
+        background-color: #4d2a2a;
+        color: #ff6b6b;
+      }
+      
+      .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      
+      .status-indicator.orange {
+        background-color: #ffa94d;
+      }
+      
+      .status-indicator.blue {
+        background-color: #5eb3ff;
+      }
+      
+      .status-indicator.green {
+        background-color: #38e078;
+      }
+      
+      .status-indicator.red {
+        background-color: #ff6b6b;
+      }
+      
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      
+      .progress-bar {
+        width: 100%;
+        height: 6px;
+        background-color: #29382f;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 12px;
+        margin-bottom: 8px;
+      }
+      
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #38e078 0%, #2ec566 100%);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+      
+      .progress-text {
+        font-size: 11px;
+        color: #b8c5be;
+        margin-top: 4px;
+      }
+      
+      .model-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      
+      .btn {
+        flex: 1;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        letter-spacing: 0.015em;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      
+      .btn-primary {
+        background-color: #38e078;
+        color: #111714;
+      }
+      
+      .btn-primary:hover:not(:disabled) {
+        background-color: #2ec566;
+        transform: translateY(-1px);
+      }
+      
+      .btn-secondary {
+        background-color: #29382f;
+        color: white;
+      }
+      
+      .btn-secondary:hover:not(:disabled) {
+        background-color: #354a3f;
+      }
+      
+      .btn-danger {
+        background-color: #4d2a2a;
+        color: #ff6b6b;
+      }
+      
+      .btn-danger:hover:not(:disabled) {
+        background-color: #5f3535;
+      }
+      
+      .model-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #29382f;
+      }
+      
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      
+      .stat-label {
+        font-size: 11px;
+        color: #b8c5be;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      
+      .stat-value {
+        font-size: 13px;
+        font-weight: 600;
+        color: white;
+      }
+      
+      .info-box {
+        background-color: #1a2a3d;
+        border: 1px solid #2a3d54;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: start;
+        gap: 12px;
+      }
+      
+      .info-icon {
+        color: #5eb3ff;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+      
+      .info-text {
+        font-size: 13px;
+        color: #b8c5be;
+        line-height: 1.4;
+      }
+      
+      .spinner {
+        border: 2px solid #29382f;
+        border-top: 2px solid #38e078;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #b8c5be;
+      }
+      
+      .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo-section">
+          <img src="../../assets/logo.png" alt="ETHmem Logo" class="logo-icon">
+          <span class="logo-text">Model Management</span>
+        </div>
+        <button class="back-btn" id="backBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Back
+        </button>
+      </header>
+      
+      <div class="content">
+        <h2>AI Models</h2>
+        <p class="description">Manage local AI models for private fact extraction from your conversations.</p>
+        
+        <div class="info-box">
+          <div class="info-icon">ℹ️</div>
+          <div class="info-text">
+            Models run locally in your browser using WebGPU for privacy. No data is sent to external servers during extraction.
+          </div>
+        </div>
+        
+        <div id="modelsList">
+          <!-- Models will be dynamically loaded here -->
+        </div>
+      </div>
+    </div>
+    <script type="module" src="modelManagement.js"></script>
+  </body>
+</html>

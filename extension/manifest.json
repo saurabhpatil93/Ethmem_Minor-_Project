@@ -1,0 +1,78 @@
+{
+  "manifest_version": 3,
+  "name": "ETHMem",
+  "description": "Decentralized memory for ChatGPT, Claude, and Gemini - AI-powered memory extraction and on-chain storage.",
+  "version": "0.3.11",
+  "permissions": ["scripting", "activeTab", "storage"],
+  "host_permissions": [
+    "https://chat.openai.com/*",
+    "https://chatgpt.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*",
+    "https://asi1.ai/*",
+    "http://localhost/*",
+    "https://localhost/*",
+    "http://127.0.0.1/*",
+    "https://127.0.0.1/*",
+    "https://ethmem.vercel.app/*",
+    "https://ETHMem.com/*",
+    "https://*.vercel.app/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "background": {
+    "service_worker": "src/background/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://asi1.ai/*"
+      ],
+      "js": ["src/content/contentScript.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "http://localhost/*",
+        "https://localhost/*",
+        "http://127.0.0.1/*",
+        "https://127.0.0.1/*",
+        "https://ethmem.vercel.app/*",
+        "https://ETHMem.com/*",
+        "https://*.vercel.app/*"
+      ],
+      "js": ["src/content/frontendBridge.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/logo.png",
+        "src/page/pageScript.js",
+        "src/page/smartInjector.js",
+        "src/ui/memoryViewer.js",
+        "src/ui/modelManagement.html",
+        "src/ui/modelManagement.js",
+        "src/ui/transformersLoader.html",
+        "src/ui/transformers.min.js",
+        "src/ui/transformersLoaderScript.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "icons": {
+    "16": "assets/logo.png",
+    "48": "assets/logo.png",
+    "128": "assets/logo.png"
+  },
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_title": "ETHMem - AI Memory Manager"
+  }
+}

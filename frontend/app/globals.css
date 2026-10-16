@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F9FAFC;
+  --foreground: #171717;
+}
+
+/* Theme variables (can be referenced in components) */
+:root {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  /* font variables are injected by next/font in layout.js as --font-geist-sans / --font-geist-mono */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Dark theme is applied only when the html element has the `dark` class */
+html.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Dashboard-specific helper classes using the CSS variables above */
+.bg-background-dark {
+  /* tuned diagonal dark-green gradient to closely match the screenshot */
+  background: linear-gradient(135deg, #07120b 0%, #08271a 28%, #0b2f1b 55%, #041711 100%);
+  color-scheme: dark;
+}
+.text-dark-primary { color: #c7f6df; }
+.bg-card-dark { background: linear-gradient(180deg, #152a26 0%, #0f2321 60%); }
+.bg-card-darker { background: linear-gradient(180deg, #0b1412 0%, #07100f 100%); }
+.text-muted { color: #93a09b; }
+.text-sidebar-text { color: #bfead8; }
+.text-sidebar-muted { color: #88b69f; }
+.bg-sidebar-dark { background: linear-gradient(180deg,#04120f 0%, #071612 55%, #05110f 100%); border-right: 1px solid rgba(255,255,255,0.02); }
+
+/* subtle page-level overlay used in screenshot to darken edges */
+.dashboard-overlay:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0));
+}
+
